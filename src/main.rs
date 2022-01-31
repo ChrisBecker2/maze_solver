@@ -9,6 +9,9 @@ use std::mem;
 use std::time::{Instant};
 
 const WALL_THRESHOLD : u8 = 240;
+const WALL : i32 = i32::MAX - 0;
+const UNSET : i32 = i32::MAX - 1;
+const DIRECTIONS : [(i32, i32); 4] = [(0,1), (1,0), (-1, 0), (0,-1)];
 
 /*
 fn find_pixel( img : Arc<RgbImage>, p : Rgb::<u8> ) -> (bool, u32, u32)
@@ -29,10 +32,6 @@ fn find_pixel( img : Arc<RgbImage>, p : Rgb::<u8> ) -> (bool, u32, u32)
     return (false, 0,0);
 }*/
 
-
-const WALL : i32 = i32::MAX - 0;
-const UNSET : i32 = i32::MAX - 1;
-
 fn convert_to_32bit_vector( img : &RgbImage ) -> Vec<i32>
 {
     let mut v : Vec<i32> = Vec::new();
@@ -48,7 +47,7 @@ fn convert_to_32bit_vector( img : &RgbImage ) -> Vec<i32>
     return v;
 }
 
-const DIRECTIONS : [(i32, i32); 4] = [(0,1), (1,0), (-1, 0), (0,-1)];
+
 
 fn flood_distance( v: &mut Vec<i32>, width : i32, height : i32, start : Point<i32>, end : Point<i32> )
 {
