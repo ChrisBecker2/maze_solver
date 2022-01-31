@@ -178,9 +178,14 @@ async fn run()
 
     let output_filename = &args[4];
 
-    let img = ImageReader::open(input_filename).unwrap().decode().unwrap();
-    let mut rgb_buffer = Arc::new(img.to_rgb8());
+    let img;
+    {
+        let now = Instant::now();
+        img = ImageReader::open(input_filename).unwrap().decode().unwrap();
+        println!("loading image: {}", now.elapsed().as_millis() as f32 / 1000.0);
+    }
 
+    let mut rgb_buffer = Arc::new(img.to_rgb8());
 
     if start.x < 0 || start.x >= rgb_buffer.width() as i32 || start.y < 0 || start.y >= rgb_buffer.height() as i32
     {
