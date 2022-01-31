@@ -8,6 +8,8 @@ use rusttype::Point;
 use std::mem;
 use std::time::{Duration, Instant};
 
+const WALL_THRESHOLD : u8 = 240;
+
 fn find_pixel( img : Arc<RgbImage>, p : Rgb::<u8> ) -> (bool, u32, u32)
 {
     for y in 0..img.height()
@@ -38,7 +40,7 @@ fn convert_to_32bit_vector( img : &RgbImage ) -> Vec<i32>
     let mut i = 0;
     for p in img.pixels()
     {
-        v[i] = if p[0] <= 100 {WALL} else {UNSET};
+        v[i] = if p[0] <= WALL_THRESHOLD {WALL} else {UNSET};
         i += 1;
     }
 
@@ -112,7 +114,7 @@ fn flood_distance( v: &mut Vec<i32>, width : i32, height : i32, start : Point<i3
 
         if current_points.len() == 0
         {
-            return;
+            panic!("No solution found");
         }
     }
 }
