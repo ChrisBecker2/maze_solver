@@ -47,8 +47,6 @@ fn convert_to_32bit_vector( img : &RgbImage ) -> Vec<i32>
     return v;
 }
 
-
-
 fn flood_distance( v: &mut Vec<i32>, width : i32, height : i32, start : Point<i32>, end : Point<i32> )
 {
     let mut next_points : Vec<Point<i32>> = Vec::new();
