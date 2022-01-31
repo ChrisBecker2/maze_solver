@@ -181,6 +181,17 @@ async fn run()
     let img = ImageReader::open(input_filename).unwrap().decode().unwrap();
     let mut rgb_buffer = Arc::new(img.to_rgb8());
 
+
+    if start.x < 0 || start.x >= rgb_buffer.width() as i32 || start.y < 0 || start.y >= rgb_buffer.height() as i32
+    {
+        panic!("Start is outside image");
+    }
+
+    if end.x < 0 || end.x >= rgb_buffer.width() as i32 || end.y < 0 || end.y >= rgb_buffer.height() as i32
+    {
+        panic!("End is outside image");
+    }
+
     let mut vec = convert_to_32bit_vector( rgb_buffer.deref() );
 
     {
