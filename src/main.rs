@@ -10,7 +10,6 @@ use std::time::{Duration, Instant};
 
 fn find_pixel( img : Arc<RgbImage>, p : Rgb::<u8> ) -> (bool, u32, u32)
 {
-
     for y in 0..img.height()
     {
         for x in 0..img.width()
