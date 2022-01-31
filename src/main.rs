@@ -90,13 +90,16 @@ fn flood_distance( v: &mut Vec<i32>, width : i32, height : i32, start : Point<i3
                     continue;
                 }
 
+                
+
                 let ref mut val = v[(y*width + x) as usize];
+       
                 if *val != WALL && *val > distance
                 {
                     *val = distance;
                     next_points.push(rusttype::point(x,y));
 
-                    if *point == end
+                    if end.x == x && end.y == y
                     {
                         return;
                     }
@@ -121,6 +124,8 @@ fn draw_solution( v : &Vec<i32>, width : i32, height : i32, start : Point<i32>, 
 {
     let mut point = end;
     let mut distance = v[(end.y*width+end.x) as usize];
+
+    img.put_pixel(end.x as u32, end.y as u32, Rgb([255, 0, 0]));
 
  //   println!("{}", distance);
 
@@ -186,6 +191,8 @@ async fn run()
     }
 
     let mut rgb_buffer = Arc::new(img.to_rgb8());
+
+    println!("size: {}x{}", rgb_buffer.width(), rgb_buffer.height());
 
     if start.x < 0 || start.x >= rgb_buffer.width() as i32 || start.y < 0 || start.y >= rgb_buffer.height() as i32
     {
