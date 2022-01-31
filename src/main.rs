@@ -2,14 +2,15 @@ use image::io::Reader as ImageReader;
 use image::{RgbImage, Rgb};
 use async_std::{task};
 use std::sync::Arc;
-use futures::join;
+//use futures::join;
 use std::ops::Deref;
 use rusttype::Point;
 use std::mem;
-use std::time::{Duration, Instant};
+use std::time::{Instant};
 
 const WALL_THRESHOLD : u8 = 240;
 
+/*
 fn find_pixel( img : Arc<RgbImage>, p : Rgb::<u8> ) -> (bool, u32, u32)
 {
     for y in 0..img.height()
@@ -26,7 +27,7 @@ fn find_pixel( img : Arc<RgbImage>, p : Rgb::<u8> ) -> (bool, u32, u32)
     }
 
     return (false, 0,0);
-}
+}*/
 
 
 const WALL : i32 = i32::MAX - 0;
@@ -180,7 +181,7 @@ async fn run()
 
     let output_filename = &args[4];
 
-    let mut img = ImageReader::open(input_filename).unwrap().decode().unwrap();
+    let img = ImageReader::open(input_filename).unwrap().decode().unwrap();
     let mut rgb_buffer = Arc::new(img.to_rgb8());
 
     let mut vec = convert_to_32bit_vector( rgb_buffer.deref() );
