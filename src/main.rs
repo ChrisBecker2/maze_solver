@@ -27,10 +27,30 @@ fn convert_to_32bit_vector( img : &RgbImage ) -> Vec<i32>
     return v;
 }
 
-fn flood_distance( v: &mut Vec<i32>, width : i32, height : i32, start : Point<i32>, end : Point<i32> )
+fn move_point( point: &mut Point<u32>, d : (i32,i32), width: u32, height: u32 ) -> bool
 {
-    let mut next_points : Vec<Point<i32>> = Vec::new();
-    let mut current_points : Vec<Point<i32>> = Vec::new();
+    // would move point to be negative
+    if d.0 < 0 && -d.0 as u32 > point.x || d.1 < 0 && -d.1 as u32 > point.y 
+    {
+        return false;
+    }
+
+    // would move beyond width, height
+    if d.0 > 0 && d.0 as u32 + point.x >= width || d.1 > 0 && d.1 as u32 + point.y >= height
+    {
+        return false;
+    }
+
+    point.x = (point.x as i32 + d.0) as u32;
+    point.y = (point.y as i32 + d.1) as u32;
+
+    return true;
+}
+
+fn flood_distance( v: &mut Vec<i32>, width : u32, height : u32, start : Point<u32>, end : Point<u32> )
+{
+    let mut next_points : Vec<Point<u32>> = Vec::new();
+    let mut current_points : Vec<Point<u32>> = Vec::new();
 
     current_points.push(start);
 
@@ -62,24 +82,21 @@ fn flood_distance( v: &mut Vec<i32>, width : i32, height : i32, start : Point<i3
         {
             for d in DIRECTIONS
             {
-                let x = point.x + d.0;
-                let y = point.y + d.1;
+                let mut moved_point = point.clone();
 
-                if x < 0 || y < 0 || x >= width || y >= height
+                if !move_point( &mut moved_point, d, height, width )
                 {
                     continue;
                 }
 
-                
-
-                let ref mut val = v[(y*width + x) as usize];
+                let ref mut val = v[(moved_point.y*width + moved_point.x) as usize];
        
                 if *val != WALL && *val > distance
                 {
                     *val = distance;
-                    next_points.push(rusttype::point(x,y));
+                    next_points.push(moved_point);
 
-                    if end.x == x && end.y == y
+                    if end == moved_point
                     {
                         return;
                     }
@@ -98,32 +115,29 @@ fn flood_distance( v: &mut Vec<i32>, width : i32, height : i32, start : Point<i3
     }
 }
 
-fn draw_solution( v : &Vec<i32>, width : i32, height : i32, start : Point<i32>, end : Point<i32>, img : &mut RgbImage )
+fn draw_solution( v : &Vec<i32>, width : u32, height : u32, start : Point<u32>, end : Point<u32>, img : &mut RgbImage )
 {
     let mut point = end;
     let mut distance = v[(end.y*width+end.x) as usize];
 
-    img.put_pixel(end.x as u32, end.y as u32, Rgb([255, 0, 0]));
+    img.put_pixel(end.x, end.y, Rgb([255, 0, 0]));
 
     while distance > 0
     {
         for d in DIRECTIONS
         {
-            let x = point.x + d.0;
-            let y = point.y + d.1;
-
-            if x < 0 || y < 0 || x >= width || y >= height
+            let mut moved_point = point.clone();
+            if !move_point( &mut moved_point, d, height, width )
             {
                 continue;
             }
 
-            if v[(y*width+x) as usize] == distance - 1
+            if v[(moved_point.y*width+moved_point.x) as usize] == distance - 1
             {
-                point.x = x;
-                point.y = y;
+                point = moved_point.clone();
                 distance -= 1;
 
-                img.put_pixel(x as u32, y as u32, Rgb([255, 0, 0]));
+                img.put_pixel(point.x, point.y, Rgb([255, 0, 0]));
 
                 if point == start
                 {
@@ -150,10 +164,10 @@ async fn run()
     let input_filename = &args[1];
 
     let start_split : Vec<&str> = args[2].split(",").collect();
-    let start = rusttype::point(start_split[0].parse::<i32>().unwrap(), start_split[1].parse::<i32>().unwrap());
+    let start = rusttype::point(start_split[0].parse::<u32>().unwrap(), start_split[1].parse::<u32>().unwrap());
 
     let end_split : Vec<&str> = args[3].split(",").collect();
-    let end = rusttype::point(end_split[0].parse::<i32>().unwrap(), end_split[1].parse::<i32>().unwrap());
+    let end = rusttype::point(end_split[0].parse::<u32>().unwrap(), end_split[1].parse::<u32>().unwrap());
 
     let output_filename = &args[4];
 
@@ -166,14 +180,12 @@ async fn run()
 
     let mut rgb_buffer = Arc::new(img.to_rgb8());
 
-    println!("size: {}x{}", rgb_buffer.width(), rgb_buffer.height());
-
-    if start.x < 0 || start.x >= rgb_buffer.width() as i32 || start.y < 0 || start.y >= rgb_buffer.height() as i32
+    if start.x >= rgb_buffer.width() || start.y >= rgb_buffer.height()
     {
         panic!("Start is outside image");
     }
 
-    if end.x < 0 || end.x >= rgb_buffer.width() as i32 || end.y < 0 || end.y >= rgb_buffer.height() as i32
+    if end.x >= rgb_buffer.width() || end.y >= rgb_buffer.height()
     {
         panic!("End is outside image");
     }
@@ -182,13 +194,13 @@ async fn run()
 
     {
         let now = Instant::now();
-        flood_distance( &mut vec, rgb_buffer.width().try_into().unwrap(), rgb_buffer.height().try_into().unwrap(), start, end);
+        flood_distance( &mut vec, rgb_buffer.width(), rgb_buffer.height(), start, end);
         println!("flood: {}", now.elapsed().as_millis() as f32 / 1000.0);
     }
 
     {
         let now = Instant::now();
-        draw_solution( &vec, rgb_buffer.width().try_into().unwrap(), rgb_buffer.height().try_into().unwrap(), start, end, Arc::get_mut(&mut rgb_buffer).unwrap() );
+        draw_solution( &vec, rgb_buffer.width(), rgb_buffer.height(), start, end, Arc::get_mut(&mut rgb_buffer).unwrap() );
         println!("draw_solution: {}", now.elapsed().as_millis() as f32 / 1000.0);
     }
 
