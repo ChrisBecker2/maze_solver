@@ -2,7 +2,6 @@ use image::io::Reader as ImageReader;
 use image::{RgbImage, Rgb};
 use async_std::{task};
 use std::sync::Arc;
-//use futures::join;
 use std::ops::Deref;
 use rusttype::Point;
 use std::mem;
@@ -12,25 +11,6 @@ const WALL_THRESHOLD : u8 = 240;
 const WALL : i32 = i32::MAX - 0;
 const UNSET : i32 = i32::MAX - 1;
 const DIRECTIONS : [(i32, i32); 4] = [(0,1), (1,0), (-1, 0), (0,-1)];
-
-/*
-fn find_pixel( img : Arc<RgbImage>, p : Rgb::<u8> ) -> (bool, u32, u32)
-{
-    for y in 0..img.height()
-    {
-        for x in 0..img.width()
-        {
-            let p2 = *img.get_pixel(x,y);
-          //  print!("{:?}", p2);
-            if p == p2
-            {
-                return (true, x,y);
-            }
-        }
-    }
-
-    return (false, 0,0);
-}*/
 
 fn convert_to_32bit_vector( img : &RgbImage ) -> Vec<i32>
 {
@@ -111,8 +91,6 @@ fn flood_distance( v: &mut Vec<i32>, width : i32, height : i32, start : Point<i3
         mem::swap( &mut next_points, &mut current_points );
         next_points.clear();
 
-        // println!("{}, {}", distance, current_points.len());
-
         if current_points.len() == 0
         {
             panic!("No solution found");
@@ -126,8 +104,6 @@ fn draw_solution( v : &Vec<i32>, width : i32, height : i32, start : Point<i32>, 
     let mut distance = v[(end.y*width+end.x) as usize];
 
     img.put_pixel(end.x as u32, end.y as u32, Rgb([255, 0, 0]));
-
- //   println!("{}", distance);
 
     while distance > 0
     {
@@ -153,8 +129,6 @@ fn draw_solution( v : &Vec<i32>, width : i32, height : i32, start : Point<i32>, 
                 {
                     return;
                 }
-
-               //  println!("{}", distance);
 
                 break;
             }
@@ -223,30 +197,6 @@ async fn run()
         rgb_buffer.save(output_filename).unwrap();
         println!("save as png: {}", now.elapsed().as_millis() as f32 / 1000.0);
     }
-
-    /*
-    let i1 = img.clone();
-    let p1 = task::spawn(async{ find_pixel(i1, Rgb::<u8>([255, 0, 0]))});
-    let i2 = img.clone();
-    let p2 = task::spawn(async{ find_pixel(i2, Rgb::<u8>([0, 255, 0]))});
-
-    let (start, end) = join!(p1, p2);
-
-
-    let mut v = convert_to_32bit_vector(img.deref());
-
-    println!("{}", v.len());
-
-    println!("{}x{}", img.width(), img.height());
-
-    if start.0
-    {
-        println!("{}x{}", start.1, start.2);
-    }
-    if end.0
-    {
-        println!("{}x{}", end.1, end.2);
-    }*/
 }
 
 fn main() {
