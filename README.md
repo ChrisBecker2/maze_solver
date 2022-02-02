@@ -10,10 +10,10 @@ Examples:
 
     > maze_solver imgs/ratherlarge.png 2152,0 7276,7732 results/ratherlarge_result.png
 
-        loading image: 0.402
-        flood: 0.396
-        draw_solution: 0.021
-        save as png: 0.947
+        loading image: 0.402s
+        flood: 0.396s
+        draw_solution: 0.021s
+        save as png: 0.947s
 
     maze_solver imgs/simple.png 290,0 400,581 results/simple_result.png 
     maze_solver imgs/circular.png 305,0 300,300 results/circular_result.png
