@@ -1,3 +1,5 @@
+// (c) Chris Becker 2022 - https://github.com/ChrisBecker2/
+
 use image::io::Reader as ImageReader;
 use image::{RgbaImage, Rgba};
 use async_std::{task};
