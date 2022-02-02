@@ -1,8 +1,7 @@
 # maze_solver
-Solve black and white maze images
+Rust based breadth first search maze image solver
 
-Does a flood fill that writes the distance from a start point until the end point is reached. Then a solution is drawn from the end by looking for the adjacent pixel where the distance decreases.
-
+Works on black and white images with provided start and end points. 
 
 Usage:
     maze_solver input.png start_x,start_y end_x,end_y output.png 
