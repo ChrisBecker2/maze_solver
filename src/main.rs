@@ -29,7 +29,7 @@ fn convert_to_32bit_vector( img : &RgbImage ) -> Vec<i32>
 
 fn move_point( point: &mut Point<u32>, d : (i32,i32), width: u32, height: u32 ) -> bool
 {
-    // would move point to be negative
+    // would move negative
     if d.0 < 0 && -d.0 as u32 > point.x || d.1 < 0 && -d.1 as u32 > point.y 
     {
         return false;
@@ -49,13 +49,6 @@ fn move_point( point: &mut Point<u32>, d : (i32,i32), width: u32, height: u32 ) 
 
 fn flood_distance( v: &mut Vec<i32>, width : u32, height : u32, start : Point<u32>, end : Point<u32> )
 {
-    let mut next_points : Vec<Point<u32>> = Vec::new();
-    let mut current_points : Vec<Point<u32>> = Vec::new();
-
-    current_points.push(start);
-
-    let mut distance : i32 = 1;
-
     {
         let ref mut val = v[(start.y*width + start.x) as usize];
 
@@ -64,6 +57,7 @@ fn flood_distance( v: &mut Vec<i32>, width : u32, height : u32, start : Point<u3
             panic!("Start point is a wall");
         }
 
+        // start has distance of 0 from itself
         *val = 0;
     }
 
@@ -75,6 +69,12 @@ fn flood_distance( v: &mut Vec<i32>, width : u32, height : u32, start : Point<u3
             panic!("End point is a wall");
         }
     }
+
+    let mut next_points : Vec<Point<u32>> = Vec::new();
+    let mut current_points : Vec<Point<u32>> = Vec::new();
+
+    current_points.push(start);
+    let mut distance : i32 = 1;
 
     loop
     {
@@ -91,9 +91,13 @@ fn flood_distance( v: &mut Vec<i32>, width : u32, height : u32, start : Point<u3
 
                 let ref mut val = v[(moved_point.y*width + moved_point.x) as usize];
        
+                // find neighbors that have not been visited or are not a wall
                 if *val != WALL && *val > distance
                 {
+                    // set the current distance for this pixel
                     *val = distance;
+
+                    // save the pixel to enumerate neighbors next
                     next_points.push(moved_point);
 
                     if end == moved_point
