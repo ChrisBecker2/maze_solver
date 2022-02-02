@@ -180,7 +180,7 @@ async fn run()
     {
         let now = Instant::now();
         img = ImageReader::open(input_filename).unwrap().decode().unwrap();
-        println!("loading image: {}", now.elapsed().as_millis() as f32 / 1000.0);
+        println!("loading image: {}s", now.elapsed().as_millis() as f32 / 1000.0);
     }
 
     let mut rgb_buffer = Arc::new(img.to_rgba8());
@@ -200,19 +200,19 @@ async fn run()
     {
         let now = Instant::now();
         flood_distance( &mut vec, rgb_buffer.width(), rgb_buffer.height(), start, end);
-        println!("flood: {}", now.elapsed().as_millis() as f32 / 1000.0);
+        println!("flood: {}s", now.elapsed().as_millis() as f32 / 1000.0);
     }
 
     {
         let now = Instant::now();
         draw_solution( &vec, rgb_buffer.width(), rgb_buffer.height(), start, end, Arc::get_mut(&mut rgb_buffer).unwrap() );
-        println!("draw_solution: {}", now.elapsed().as_millis() as f32 / 1000.0);
+        println!("draw_solution: {}s", now.elapsed().as_millis() as f32 / 1000.0);
     }
 
     {
         let now = Instant::now();
         rgb_buffer.save(output_filename).unwrap();
-        println!("save as png: {}", now.elapsed().as_millis() as f32 / 1000.0);
+        println!("save as png: {}s", now.elapsed().as_millis() as f32 / 1000.0);
     }
 }
 
