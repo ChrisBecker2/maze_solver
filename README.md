@@ -16,8 +16,5 @@ Examples:
         draw_solution: 0.021
         save as png: 0.947
 
-    maze_solver imgs/circu.png 2152,0 7276,7732 results/ratherlarge_result.png
-
-Image attribution:
-ratherlarge.png - https://freesvg.org/ratherlargemaze
-circular.png - https://freesvg.org/circular-maze
+    maze_solver imgs/circular.png 305,0 300,300 results/circular_result.png
+    maze_solver imgs/distorted.png 0,46 787,761 results/distorted_result.png
