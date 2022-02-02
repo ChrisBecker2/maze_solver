@@ -85,7 +85,7 @@ fn flood_distance( v: &mut Vec<i32>, width : u32, height : u32, start : Point<u3
             {
                 let mut moved_point = point.clone();
 
-                if !move_point( &mut moved_point, d, height, width )
+                if !move_point( &mut moved_point, d, width, height )
                 {
                     continue;
                 }
@@ -132,7 +132,7 @@ fn draw_solution( v : &Vec<i32>, width : u32, height : u32, start : Point<u32>, 
         for d in DIRECTIONS
         {
             let mut moved_point = point.clone();
-            if !move_point( &mut moved_point, d, height, width )
+            if !move_point( &mut moved_point, d, width, height )
             {
                 continue;
             }
