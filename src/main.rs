@@ -11,6 +11,7 @@ const WALL_THRESHOLD : u8 = 240;
 const WALL : i32 = i32::MAX - 0;
 const UNSET : i32 = i32::MAX - 1;
 const DIRECTIONS : [(i32, i32); 4] = [(0,1), (1,0), (-1, 0), (0,-1)];
+const SOLUTION_COLOR : Rgb<u8> = Rgb([255, 0, 0]);
 
 fn convert_to_32bit_vector( img : &RgbImage ) -> Vec<i32>
 {
@@ -124,7 +125,7 @@ fn draw_solution( v : &Vec<i32>, width : u32, height : u32, start : Point<u32>, 
     let mut point = end;
     let mut distance = v[(end.y*width+end.x) as usize];
 
-    img.put_pixel(end.x, end.y, Rgb([255, 0, 0]));
+    img.put_pixel(end.x, end.y, SOLUTION_COLOR);
 
     while distance > 0
     {
@@ -141,7 +142,7 @@ fn draw_solution( v : &Vec<i32>, width : u32, height : u32, start : Point<u32>, 
                 point = moved_point.clone();
                 distance -= 1;
 
-                img.put_pixel(point.x, point.y, Rgb([255, 0, 0]));
+                img.put_pixel(point.x, point.y, SOLUTION_COLOR);
 
                 if point == start
                 {
@@ -161,7 +162,7 @@ async fn run()
     if args.len() != 5
     {
         println!("Usage: ");
-        println!("   images_test input.png start_x,start_y end_x,end_y output.png");
+        println!("   maze_solver input.png start_x,start_y end_x,end_y output.png");
         return;
     }
 
