@@ -4,7 +4,8 @@ Rust based breadth first search maze image solver
 Works on black and white images with provided start and end points. 
 
 Usage:
-    maze_solver input.png start_x,start_y end_x,end_y output.png 
+     
+     maze_solver input.png start_x,start_y end_x,end_y output.png 
 
 Examples:
 
