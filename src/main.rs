@@ -1,5 +1,5 @@
 use image::io::Reader as ImageReader;
-use image::{RgbImage, Rgb};
+use image::{RgbaImage, Rgba};
 use async_std::{task};
 use std::sync::Arc;
 use std::ops::Deref;
@@ -11,9 +11,9 @@ const WALL_THRESHOLD : u8 = 240;
 const WALL : i32 = i32::MAX - 0;
 const UNSET : i32 = i32::MAX - 1;
 const DIRECTIONS : [(i32, i32); 4] = [(0,1), (1,0), (-1, 0), (0,-1)];
-const SOLUTION_COLOR : Rgb<u8> = Rgb([255, 0, 0]);
+const SOLUTION_COLOR : Rgba<u8> = Rgba([255, 0, 0, 255]);
 
-fn convert_to_32bit_vector( img : &RgbImage ) -> Vec<i32>
+fn convert_to_32bit_vector( img : &RgbaImage ) -> Vec<i32>
 {
     let mut v : Vec<i32> = Vec::new();
     v.resize( ( img.width() * img.height() ) as usize, 0);
@@ -21,7 +21,7 @@ fn convert_to_32bit_vector( img : &RgbImage ) -> Vec<i32>
     let mut i = 0;
     for p in img.pixels()
     {
-        v[i] = if p[0] <= WALL_THRESHOLD {WALL} else {UNSET};
+        v[i] = if p[0] <= WALL_THRESHOLD && p[3] >= 255 - WALL_THRESHOLD {WALL} else {UNSET};
         i += 1;
     }
 
@@ -120,7 +120,7 @@ fn flood_distance( v: &mut Vec<i32>, width : u32, height : u32, start : Point<u3
     }
 }
 
-fn draw_solution( v : &Vec<i32>, width : u32, height : u32, start : Point<u32>, end : Point<u32>, img : &mut RgbImage )
+fn draw_solution( v : &Vec<i32>, width : u32, height : u32, start : Point<u32>, end : Point<u32>, img : &mut RgbaImage )
 {
     let mut point = end;
     let mut distance = v[(end.y*width+end.x) as usize];
@@ -183,7 +183,7 @@ async fn run()
         println!("loading image: {}", now.elapsed().as_millis() as f32 / 1000.0);
     }
 
-    let mut rgb_buffer = Arc::new(img.to_rgb8());
+    let mut rgb_buffer = Arc::new(img.to_rgba8());
 
     if start.x >= rgb_buffer.width() || start.y >= rgb_buffer.height()
     {
